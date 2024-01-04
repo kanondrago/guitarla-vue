@@ -1,27 +1,29 @@
 <script setup>
-  import { reactive, ref, onMounted } from "vue";
+  import { ref, onMounted } from "vue";
   import { db } from './data/guitarras'
+  import Guitarra from './components/Guitarra.vue'
 
-  // const state = ref(db)
+    const guitarras = ref([])
 
-  const state = reactive({
-    guitarras: []
-  })
+    const carrito = ref([])
+
 
   // aca se puede hacer una consulta a una api utilizando fetch 
   onMounted(() => {
     console.log('al recargar en el ciclo de vida onMounted')
-    state.guitarras = db
+    guitarras.value = db
   })
 
+  const agregarCarrito = (guitarra) => {
+        guitarra.cantidad = 1
+        carrito.value.push(guitarra)
+    }
+
+    console.log(carrito.value)
 
 </script>
 
 <template>
-
-  <!-- <h2>{{ state2.guitarras[2].nombre }}</h2> -->
-
-  <!-- <h2>{{ state[0].nombre }}</h2> -->
   <header class="py-5 header">
       <div class="container-xl">
           <div class="row justify-content-center justify-content-md-between">
@@ -111,20 +113,14 @@
       <h2 class="text-center">Nuestra Colección</h2>
 
       <div class="row mt-5">
-          <div class="col-md-6 col-lg-4 my-4 row align-items-center">
-              <div class="col-4">   
-                  <img class="img-fluid" src="/img/guitarra_01.jpg" alt="imagen guitarra">
-              </div>
-              <div class="col-8">
-                  <h3 class="text-black fs-4 fw-bold text-uppercase">Lukather</h3>
-                  <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit quae labore odit magnam in autem nesciunt, amet deserunt</p>
-                  <p class="fw-black text-primary fs-3">$299</p>
-                  <button 
-                      type="button"
-                      class="btn btn-dark w-100 "
-                  >Agregar al Carrito</button>
-              </div>
-          </div><!-- FIN GUITARRA -->
+        <Guitarra 
+            v-for="guitarra in guitarras" 
+            :key="guitarra.id"
+            v-bind:guitarraH="guitarra"
+            @method-handler="agregarCarrito"
+            >
+            
+        </Guitarra>
       </div>
 
   </main>
