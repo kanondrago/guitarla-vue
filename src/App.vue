@@ -2,112 +2,85 @@
   import { ref, onMounted } from "vue";
   import { db } from './data/guitarras'
   import Guitarra from './components/Guitarra.vue'
+  import Header from './components/Header.vue'
+  import Footer from './components/Footer.vue'
 
-    const guitarras = ref([])
+  // ARREGLO DE LA BASE DE DATOS DE TODAS LAS GUITARRAS
+  const guitarras = ref([])
 
-    const carrito = ref([])
+  // ARREGLO DE LOS PRODUCTOS SELECCIONADOS PARA EL CARRITO DE COMPRAS
+  const carrito = ref([])
+
+  // CONTADOR DE LOS PRODUCTOS EN EL CARRITO
+  const cantidad = ref(0)
 
 
-  // aca se puede hacer una consulta a una api utilizando fetch 
+  // CICLO DE VIDA AL INICIAR LA APP - ACA UTILIZAMOS EL FETCH PARA CONSULTAR UNA API
   onMounted(() => {
     console.log('al recargar en el ciclo de vida onMounted')
     guitarras.value = db
   })
 
+  // AGREGAR UN ITEM AL CARRITO
   const agregarCarrito = (guitarra) => {
+
+      const existeCarrito = carrito.value.findIndex(producto => producto.id===guitarra.id)
+
+      if(existeCarrito>=0) {
+        carrito.value[existeCarrito].cantidad++
+      }
+      else {
         guitarra.cantidad = 1
         carrito.value.push(guitarra)
-    }
+      }
+      actulizarContador(carrito)
+  }
+      
+  // ELIMINA UN ITEM DEL CARRITO
+  const eliminarProducto = (id) => {
+    const indexCarrito = carrito.value.findIndex(producto => producto.id === id)
+    carrito.value.splice(indexCarrito,1)
+    actulizarContador(carrito)
+  }
 
-    console.log(carrito.value)
+  // DECREMENTA EN 1 LA CANTIDAD DEL ITEM DEL CARRITO
+  const decrementarCantidad = (id) => {
+    const indexCarrito = carrito.value.findIndex(producto => producto.id === id)
+    if(carrito.value[indexCarrito].cantidad<=1) return 
+    carrito.value[indexCarrito].cantidad--
+    actulizarContador(carrito)
+  }
+
+  // INCREMENTA EN 1 LA CANTIDAD DEL ITEM DEL CARRITO
+  const incrementarCantidad = (id) => {
+    const indexCarrito = carrito.value.findIndex(producto => producto.id === id)
+    if(carrito.value[indexCarrito].cantidad>=5) return 
+    carrito.value[indexCarrito].cantidad++ 
+    actulizarContador(carrito)
+  }
+
+
+  //ACTUALIZA EL CONTADOR DEL CARRITO
+  const actulizarContador = (carrito) => {
+        const sumaCantidad = ref(0)
+        carrito.value.forEach(producto => sumaCantidad.value += producto.cantidad)
+        cantidad.value = sumaCantidad.value
+  }
+
 
 </script>
 
 <template>
-  <header class="py-5 header">
-      <div class="container-xl">
-          <div class="row justify-content-center justify-content-md-between">
-              <div class="col-8 col-md-3">
-                  <a href="index.html">
-                      <img class="img-fluid" src="/img/logo.svg" alt="imagen logo">
-                  </a>
-              </div>
-              <nav class="col-md-6 a mt-5 d-flex align-items-start justify-content-end">
-                  <div 
-                      class="carrito"
-                  >
-                      <img class="img-fluid" src="/img/carrito.png" alt="imagen carrito" />
 
-                      <div id="carrito" class="bg-white p-3">
-                          <p class="text-center">El carrito esta vacio</p>
-                          <table class="w-100 table">
-                              <thead>
-                                  <tr>
-                                      <th>Imagen</th>
-                                      <th>Nombre</th>
-                                      <th>Precio</th>
-                                      <th>Cantidad</th>
-                                      <th></th>
-                                  </tr>
-                              </thead>
-                              <tbody>
-                                  <tr>
-                                      <td>
-                                          <img class="img-fluid" src="/img/guitarra_02.jpg" alt="imagen guitarra">
-                                      </td>
-                                      <td>SRV</td>
-                                      <td class="fw-bold">
-                                              $299
-                                      </td>
-                                      <td class="flex align-items-start gap-4">
-                                          <button
-                                              type="button"
-                                              class="btn btn-dark"
-                                          >
-                                              -
-                                          </button>
-                                              1
-                                          <button
-                                              type="button"
-                                              class="btn btn-dark"
-                                          >
-                                              +
-                                          </button>
-                                      </td>
-                                      <td>
-                                          <button
-                                              class="btn btn-danger"
-                                              type="button"
-                                          >
-                                              X
-                                          </button>
-                                      </td>
-                                  </tr>
-                              </tbody>
-                          </table>
+  <Header
+      :carrito="carrito"
+      @decrementar-cantidad="decrementarCantidad"
+      @incrementar-cantidad="incrementarCantidad"
+      @eliminar-producto="eliminarProducto"
+      :cantidad="cantidad"
+  >
 
-                          <p class="text-end">Total pagar: <span class="fw-bold">$899</span></p>
-                          <button class="btn btn-dark w-100 mt-3 p-2">Vaciar Carrito</button>
-                      </div>
-                  </div>
-              </nav>
-          </div><!--.row-->
-
-          <div class="row mt-5">
-              <div class="col-md-6 text-center text-md-start pt-5">
-                  <h1 class="display-2 fw-bold">Modelo VAI</h1>
-                  <p class="mt-5 fs-5 text-white">Lorem ipsum dolor sit amet consectetur adipisicing elit. Temporibus, possimus quibusdam dolor nemo velit quo, fuga omnis, iure molestias optio tempore sint at ipsa dolorum odio exercitationem eos inventore odit.</p>
-                  <p class="text-primary fs-1 fw-black">$399</p>
-                  <button 
-                      type="button"
-                      class="btn fs-4 bg-primary text-white py-2 px-5"
-                  >Agregar al Carrito</button>
-              </div>
-          </div>
-      </div>
-
-      <img class="header-guitarra" src="/img/header_guitarra.png" alt="imagen header">
-  </header>
+  </Header>
 
   <main class="container-xl mt-5">
       <h2 class="text-center">Nuestra Colección</h2>
@@ -125,12 +98,7 @@
 
   </main>
 
-
-  <footer class="bg-dark mt-5 py-5">
-      <div class="container-xl">
-          <p class="text-white text-center fs-4 mt-4 m-md-0">GuitarLA - Todos los derechos Reservados</p>
-      </div>
-  </footer>
+  <Footer/>
 
 </template>
 

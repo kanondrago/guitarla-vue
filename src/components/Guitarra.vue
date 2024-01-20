@@ -33,8 +33,8 @@
                 type="button"
                 class="btn btn-dark w-100 "
                 v-on:click="$emit('methodHandler', guitarraH)"
-                
-            >Agregar al Carrito</button>
+            >Agregar al Carrito
+            </button>
         </div>
     </div><!-- FIN GUITARRA -->
 
