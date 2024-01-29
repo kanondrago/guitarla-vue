@@ -23,7 +23,8 @@
             <img 
                 class="img-fluid" 
                 :src="'/img/'+guitarraH.imagen+'.jpg'" 
-                :alt="'Guitarra: ' + guitarraH.nombre">
+                :alt="'Guitarra: ' + guitarraH.nombre"
+            >
         </div>
         <div class="col-8">
             <h3 class="text-black fs-4 fw-bold text-uppercase">{{guitarraH.nombre}}</h3>
